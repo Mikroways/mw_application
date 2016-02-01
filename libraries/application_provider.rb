@@ -6,7 +6,7 @@ class Chef
 
       def load_current_resource_with_application_resource
         load_current_resource_without_application_resource
-        @application_resource = @new_resource.application_resource
+        @application_resource = @new_resource.application_resource if @new_resource.respond_to?(:application_resource)
       end
 
       alias_method :load_current_resource_without_application_resource, :load_current_resource
