@@ -32,7 +32,7 @@ class Chef
             action :create
           end
 
-          ruby_block 'fail' do
+          ruby_block "fail service #{new_resource.name}" do
             block { raise "Upstart script for /etc/init/#{new_resource.name}.conf failed" }
             action :nothing
           end
@@ -41,7 +41,7 @@ class Chef
             path "/etc/init/#{new_resource.name}.conf"
             action :delete
             not_if "/bin/init-checkconf /etc/init/#{new_resource.name}.conf"
-            notifies :run, 'ruby_block[fail]', :immediate
+            notifies :run, "ruby_block[fail service #{new_resource.name}]", :immediate
           end
         end
       end

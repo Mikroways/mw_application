@@ -9,7 +9,7 @@ require 'spec_helper'
 describe 'application_test::default' do
 
   let(:chef_run) do
-    runner = ChefSpec::ServerRunner.new(step_into: 'application')
+    runner = ChefSpec::SoloRunner.new(step_into: 'application')
     runner.converge(described_recipe)
   end
 

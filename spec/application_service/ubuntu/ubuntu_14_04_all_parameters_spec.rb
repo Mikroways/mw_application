@@ -9,7 +9,7 @@ require 'spec_helper'
 describe 'application_service_test::all_parameters' do
 
   let(:chef_run) do
-    runner = ChefSpec::ServerRunner.new(
+    runner = ChefSpec::SoloRunner.new(
       platform: 'ubuntu',
       version: '14.04',
       step_into: 'application_service')

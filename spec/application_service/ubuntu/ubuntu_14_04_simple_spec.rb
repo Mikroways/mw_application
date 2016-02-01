@@ -9,7 +9,7 @@ require 'spec_helper'
 describe 'application_service_test::default' do
 
   let(:chef_run) do
-    runner = ChefSpec::ServerRunner.new(
+    runner = ChefSpec::SoloRunner.new(
       platform: 'ubuntu',
       version: '14.04',
       step_into: 'application_service')
@@ -63,7 +63,7 @@ CONTENT
       expect(chef_run).to create_template('simple_app :create /etc/init/simple_app.conf')
       expect(chef_run).to delete_file('simple_app :delete /etc/init/simple_app.conf syntax error')
       resource = chef_run.file 'simple_app :delete /etc/init/simple_app.conf syntax error'
-      expect(resource).to notify('ruby_block[fail]').to(:run).immediately
+      expect(resource).to notify('ruby_block[fail service simple_app]').to(:run).immediately
     end
 
   end
