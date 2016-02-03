@@ -42,6 +42,8 @@ class Chef
           symlink_before_migrate symlink_before_migrate_hash
           before_migrate new_resource.before_migrate
           action new_resource.deploy_action
+          migrate new_resource.migrate
+          migration_command new_resource.migration_command
         end
 
         d.application_resource = application_resource
@@ -80,6 +82,13 @@ class Chef
           manage_home true
           home        "/home/#{new_resource.owner}"
           shell       '/bin/bash'
+        end
+
+        directory new_resource.path do
+          recursive true
+          mode '0750'
+          group new_resource.group
+          user new_resource.owner
         end
 
         ( [shared_path] +

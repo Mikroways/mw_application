@@ -1,6 +1,7 @@
 class Chef
   class Resource
     class ApplicationRuby < ApplicationBase
+      include ::Application::Helper::Ruby
       provides :application_ruby
 
       self.resource_name = :application_ruby

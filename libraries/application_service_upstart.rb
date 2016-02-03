@@ -8,6 +8,11 @@ class Chef
         end
 
         action :create do
+          ruby_block "fail #{new_resource.name} if init-checkconf not exists" do
+            block { raise "Upstart script creation needs /usr/bin/init-checkconf" }
+            not_if "test -x /usr/bin/init-checkconf"
+          end
+
           template "#{new_resource.name} :create /etc/init/#{new_resource.name}.conf" do
             path "/etc/init/#{new_resource.name}.conf"
             source 'upstart/application.erb'
@@ -32,16 +37,12 @@ class Chef
             action :create
           end
 
-          ruby_block "fail service #{new_resource.name}" do
-            block { raise "Upstart script for /etc/init/#{new_resource.name}.conf failed" }
-            action :nothing
-          end
 
-          file "#{new_resource.name} :delete /etc/init/#{new_resource.name}.conf syntax error" do
-            path "/etc/init/#{new_resource.name}.conf"
-            action :delete
-            not_if "/bin/init-checkconf /etc/init/#{new_resource.name}.conf"
-            notifies :run, "ruby_block[fail service #{new_resource.name}]", :immediate
+          ruby_block "check service sintax for #{new_resource.name}" do
+            block { raise "Upstart script for /etc/init/#{new_resource.name}.conf failed" }
+            not_if "/usr/bin/init-checkconf /etc/init/#{new_resource.name}.conf"
+            action :nothing
+            subscribes :run, "template[#{new_resource.name} :create /etc/init/#{new_resource.name}.conf]", :immediately
           end
         end
       end

@@ -159,6 +159,21 @@ For example:
   end
 ```
 
+Some tips when coding `before_migrate` block
+--------------------------------------------
+
+Inside this block you can use any resource chef knows, but some useful helpers
+are not available inside `Chef::Provider` class. This is the case of
+`value_for_platform` or `value_for_platform_family`. When you need this helpers
+inside `before_migrate` block you can call them via `new_resource` because this
+DSL methods are included by `Chef::Resource` class. 
+
+```ruby
+
+new_resource.value_for_platform_family debian: 'git-core'
+
+```
+
 Helpers provided
 ----------------
 

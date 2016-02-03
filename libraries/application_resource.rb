@@ -16,6 +16,7 @@ class Chef
 
       attribute :name,  kind_of: String, name_property: true, required: true
       attribute :owner, kind_of: String, required: true, default: lazy {|resource| resource.name}
+      attribute :group, kind_of: String
       attribute :path, kind_of: String, required: true
       attribute :shared_directories, kind_of: Array, default: []
       attribute :repository, kind_of: String, required: true
@@ -23,12 +24,24 @@ class Chef
       attribute :symlink_before_migrate, kind_of: Array, default: %w(config/database.yml)
       attribute :deploy_action, kind_of: Symbol, default: :deploy, is: [:deploy, :force_deploy, :rollback]
       attribute :node_attribute, kind_of: String, default: 'applications'
-      attribute :database, kind_of: Hash, required: true
-      attribute :before_migrate, kind_of: [Proc, String]
+      attribute :variables, kind_of: Hash, default: {}
+      attribute :environment, kind_of: Hash
+      attribute :migrate, kind_of: [TrueClass, FalseClass], default: false
+      attribute :migration_command, kind_of: String
+
+
+      def before_migrate(arg=nil, &block)
+        arg ||= block
+        set_or_return(:before_migrate, arg, :kind_of => [Proc, String])
+      end
 
 
       def shared_path
         "#{path}/shared"
+      end
+
+      def current_path
+        "#{path}/current"
       end
 
       def socket

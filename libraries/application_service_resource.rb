@@ -1,8 +1,11 @@
 require 'chef/resource/lwrp_base'
+require_relative 'application_helpers'
 
 class Chef
   class Resource
     class ApplicationService < Chef::Resource::LWRPBase
+      include ::Application::Helper::Ruby
+
       self.resource_name = :application_service
       provides :application_service
 
