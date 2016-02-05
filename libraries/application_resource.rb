@@ -15,7 +15,7 @@ class Chef
       default_action :install
 
       attribute :name,  kind_of: String, name_property: true, required: true
-      attribute :owner, kind_of: String, required: true, default: lazy {|resource| resource.name}
+      attribute :user, kind_of: String, required: true, default: lazy {|resource| resource.name}
       attribute :group, kind_of: String
       attribute :path, kind_of: String, required: true
       attribute :shared_directories, kind_of: Array, default: []
@@ -74,12 +74,12 @@ class Chef
       #   before_migrate do
       #     execute "update something" do
       #       cwd release_path
-      #       user application_resource.owner
+      #       user application_resource.user
       #       command "some command to update application"
       #       action :nothing
       #     end
       #     file "#{release_path}/config/database.yml" do
-      #       owner application_resource.owner
+      #       owner application_resource.user
       #       mode '0640'
       #       content application_resource.database.to_yaml
       #       sensitive true

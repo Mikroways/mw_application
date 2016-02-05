@@ -1,4 +1,9 @@
 if defined?(ChefSpec)
+  if ChefSpec.respond_to?(:define_matcher)
+    ChefSpec.define_matcher :application
+    ChefSpec.define_matcher :application_ruby
+  end
+
   def install_application(name)
     ChefSpec::Matchers::ResourceMatcher.new(:application, :install, name)
   end
@@ -7,7 +12,4 @@ if defined?(ChefSpec)
     ChefSpec::Matchers::ResourceMatcher.new(:application_ruby, :install, name)
   end
 
-  def create_application_service(name)
-    ChefSpec::Matchers::ResourceMatcher.new(:application_service, :create, name)
-  end
 end

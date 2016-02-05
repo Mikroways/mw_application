@@ -11,7 +11,7 @@ class Chef
 
       alias_method :load_current_resource_without_application_resource, :load_current_resource
       alias_method :load_current_resource, :load_current_resource_with_application_resource
-
+      include Chef::DSL::IncludeRecipe
     end
 
     class ApplicationBase < Chef::Provider::LWRPBase
@@ -32,8 +32,7 @@ class Chef
 
         application_resource = new_resource
 
-        d = deploy_revision new_resource.name do
-          user new_resource.owner
+        d = deploy new_resource.name do
           repository new_resource.repository
           revision new_resource.revision
           deploy_to new_resource.path
@@ -44,8 +43,11 @@ class Chef
           action new_resource.deploy_action
           migrate new_resource.migrate
           migration_command new_resource.migration_command
+          environment new_resource.environment
+          provider Chef::Provider::Deploy::Revision
         end
 
+        d.user new_resource.user
         d.application_resource = application_resource
 
 
@@ -63,13 +65,17 @@ class Chef
       def save_node_attributes
         node.set[new_resource.node_attribute] = { new_resource.resource_name => {} }
         node.set[new_resource.node_attribute][new_resource.resource_name][new_resource.name] = {
-          owner: new_resource.owner,
+          user: new_resource.user,
+          group: new_resource.group,
           path: new_resource.path,
+          environment: new_resource.environment,
           shared_directories: new_resource.shared_directories,
           repository: new_resource.repository,
           revision: new_resource.revision,
           symlink_before_migrate: new_resource.symlink_before_migrate,
           deploy_action: new_resource.deploy_action,
+          migrate: new_resource.migrate,
+          migration_command: new_resource.migration_command,
           socket: socket
         }
       end
@@ -77,27 +83,28 @@ class Chef
       def prepare_deployment
         save_node_attributes
 
-        user new_resource.owner do
+        user new_resource.user do
           supports    :manage_home => true
           manage_home true
-          home        "/home/#{new_resource.owner}"
+          home        "/home/#{new_resource.user}"
           shell       '/bin/bash'
         end
 
-        directory new_resource.path do
+        base_dir = directory new_resource.path do
           recursive true
           mode '0750'
-          group new_resource.group
-          user new_resource.owner
         end
+
+        base_dir.user new_resource.user
+        base_dir.group new_resource.group
 
         ( [shared_path] +
          (Array(new_resource.symlink_before_migrate).map {|x| "#{shared_path}/#{x}"} + [socket]).map {|x| ::File.dirname x} +
         new_resource.shared_directories.map {|x| "#{shared_path}/#{x}"}). each do |dir|
-          directory dir do
+          d = directory dir do
             recursive true
-            user new_resource.owner
           end
+          d.user new_resource.user
         end
       end
 

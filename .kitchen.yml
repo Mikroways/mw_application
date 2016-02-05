@@ -17,6 +17,11 @@ platforms:
     run_list:
       - recipe[apt]
       - recipe[git]
+  - name: centos-6.7
+    driver: vagrant
+    run_list:
+      - recipe[yum]
+      - recipe[git]
   - name: centos-7.1
     run_list:
       - recipe[yum]
@@ -25,4 +30,4 @@ platforms:
 suites:
   - name: default
     run_list:
-      - recipe[application_service_test::samson]
+      - recipe[application_service_test::redmine]

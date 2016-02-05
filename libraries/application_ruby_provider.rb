@@ -19,6 +19,11 @@ class Chef
         end
       end
 
+      def save_node_attributes
+        super
+        node.set[new_resource.node_attribute][new_resource.resource_name][new_resource.name]['ruby'] = new_resource.ruby
+      end
+
     end
   end
 end

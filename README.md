@@ -103,7 +103,7 @@ attributes for custom development needs
 
 - `name` - name of the resource. It will be used as default value for creating
   application ti deploy application as.
-- `owner` - user to be created and used to deploy code as.
+- `user` - user to be created and used to deploy code as.
 - `path` - path to deploy code using `deploy_revision` chef resource
 - `shared_directories` - array of directories to be created in shared directory
   and purged after cloning code
