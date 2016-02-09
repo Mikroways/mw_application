@@ -26,31 +26,24 @@ class Chef
         @socket = @new_resource.socket
       end
 
-      action :install do
+      action :deploy do
+        deploy_with_action :deploy
+      end
 
-        prepare_deployment
+      action :force_deploy do
+        deploy_with_action :force_deploy
+      end
 
-        application_resource = new_resource
+      action :rollback do
+        raise 'Application cannot be rolled back if not deployed before' unless
+          node[new_resource.node_attribute][new_resource.resource_name][new_resource.name]
+        deploy_resource :rollback
+      end
 
-        d = deploy new_resource.name do
-          repository new_resource.repository
-          revision new_resource.revision
-          deploy_to new_resource.path
-          purge_before_symlink new_resource.shared_directories
-          symlinks symlinks_hash
-          symlink_before_migrate symlink_before_migrate_hash
-          before_migrate new_resource.before_migrate
-          action new_resource.deploy_action
-          migrate new_resource.migrate
-          migration_command new_resource.migration_command
-          environment new_resource.environment
-          provider Chef::Provider::Deploy::Revision
-        end
-
-        d.user new_resource.user
-        d.application_resource = application_resource
-
-
+      action :delete do
+        raise 'Application cannot be deleted if not deployed before' unless
+          node[new_resource.node_attribute][new_resource.resource_name][new_resource.name]
+        delete_application
       end
 
       def symlinks_hash
@@ -63,7 +56,8 @@ class Chef
 
 
       def save_node_attributes
-        node.set[new_resource.node_attribute] = { new_resource.resource_name => {} }
+        node.set[new_resource.node_attribute] = { new_resource.resource_name => {} } unless
+          node[new_resource.node_attribute]
         node.set[new_resource.node_attribute][new_resource.resource_name][new_resource.name] = {
           user: new_resource.user,
           group: new_resource.group,
@@ -98,15 +92,58 @@ class Chef
         base_dir.user new_resource.user
         base_dir.group new_resource.group
 
-        ( [shared_path] +
-         (Array(new_resource.symlink_before_migrate).map {|x| "#{shared_path}/#{x}"} + [socket]).map {|x| ::File.dirname x} +
-        new_resource.shared_directories.map {|x| "#{shared_path}/#{x}"}). each do |dir|
+        directories = Array(shared_path)
+
+        other_directories = Array(new_resource.symlink_before_migrate).map do |x|
+          "#{shared_path}/#{x}"
+        end
+        other_directories << socket
+
+        directories += other_directories.map {|x| ::File.dirname x}
+
+        directories += new_resource.shared_directories.map {|x| "#{shared_path}/#{x}"}
+
+        directories.uniq.each do |dir|
           d = directory dir do
             recursive true
           end
           d.user new_resource.user
         end
       end
+
+      def deploy_with_action(deploy_action)
+        prepare_deployment
+        deploy_resource deploy_action
+      end
+
+      def deploy_resource(deploy_action)
+        application_resource = new_resource
+
+        d = deploy new_resource.name do
+          repository new_resource.repository
+          revision new_resource.revision
+          deploy_to new_resource.path
+          purge_before_symlink new_resource.shared_directories
+          symlinks symlinks_hash
+          symlink_before_migrate symlink_before_migrate_hash
+          before_migrate new_resource.before_migrate
+          action deploy_action
+          migrate new_resource.migrate
+          migration_command new_resource.migration_command
+          environment new_resource.environment
+          provider Chef::Provider::Deploy::Revision
+        end
+
+        d.user new_resource.user
+        d.application_resource = application_resource
+
+      end
+
+      # Dlete attributes from node
+      def delete_application
+        node.rm(new_resource.node_attribute,new_resource.resource_name,new_resource.name)
+      end
+
 
     end
   end

@@ -121,6 +121,12 @@ attributes for custom development needs
 `application_resource` that will return current resource, this is an application
 resource or a custom subclass of it. Inside this Proc, other helpers provided by
 deploy resource are available as `new_resource`, `shared_path` and `release_path`
+- `environment`: environment variables specified as hash of key values. Defaults
+  to nil
+- `migration_command`: string with command to be run. Default nil. Command will
+  be run with specified environment
+- `migrate`: boolean indicating if migration_command should be run. Default to
+  false
 
 
 ### application_ruby
@@ -143,16 +149,18 @@ For example:
 
     before_migrate do
 
+      # Will be run as root
       rbenv_script "rbenv local" do
         cwd release_path
         rbenv_version application_resource.ruby
         code %{rbenv local #{application_resource.ruby}}
       end
 
+      # Will be run as root sharing gems
       rbenv_script "bundle update" do
         cwd release_path
         rbenv_version application_resource.ruby
-        code %{rbenv bundle install --without development test --deployment}
+        code %{rbenv bundle install --without development test --frozen}
       end
 
     end

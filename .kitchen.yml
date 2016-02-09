@@ -9,25 +9,28 @@ driver_config:
   use_sudo: false
 
 platforms:
-  - name: ubuntu-14.04
-    driver_config:
-      disable_upstart: false
-      image: ubuntu-upstart:14.04
-      run_command: /sbin/init
+  - name: debian-7
     run_list:
       - recipe[apt]
+      - recipe[netstat]
+      - recipe[git]
+  - name: ubuntu-14.04
+    run_list:
+      - recipe[apt]
+      - recipe[netstat]
       - recipe[git]
   - name: centos-6.7
-    driver: vagrant
     run_list:
       - recipe[yum]
+      - recipe[netstat]
       - recipe[git]
   - name: centos-7.1
     run_list:
       - recipe[yum]
+      - recipe[netstat]
       - recipe[git]
 
 suites:
   - name: default
     run_list:
-      - recipe[application_service_test::redmine]
+      - recipe[integration_test]

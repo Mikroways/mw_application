@@ -11,8 +11,9 @@ class Chef
 
       self.resource_name = :application
 
-      actions :install
-      default_action :install
+
+      actions :deploy, :force_deploy, :rollback, :delete
+      default_action :deploy
 
       attribute :name,  kind_of: String, name_property: true, required: true
       attribute :user, kind_of: String, required: true, default: lazy {|resource| resource.name}
@@ -89,9 +90,10 @@ class Chef
       #   end
       def self.define(name, &block)
         klass = Class.new(self) do
-          self.resource_name = name.to_sym
+
           provides name.to_sym
 
+          class_eval <<-CLASS
           @@define_block = nil
 
           def self.set_define_block(&block)
@@ -101,17 +103,24 @@ class Chef
           def self.define_block
             @@define_block
           end
+          CLASS
 
           def initialize(name, run_context=nil)
             super
             set_provider nil
-            ApplicationDelegator.new(self).instance_eval(&self.class.define_block)
+            delegate_initialization
           end
 
         end
+        klass.resource_name = name.to_sym
         klass.set_define_block(&block)
-        Object.const_set Chef::Mixin::ConvertToClassName.convert_to_class_name(name), klass
+        klass_name = Chef::Mixin::ConvertToClassName.convert_to_class_name(name)
+        self.const_set klass_name, klass unless defined?(klass_name)
         klass
+      end
+
+      def delegate_initialization
+        ApplicationDelegator.new(self).instance_eval(&self.class.define_block)
       end
 
     end

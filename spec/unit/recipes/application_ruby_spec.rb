@@ -17,7 +17,7 @@ describe 'application_ruby_test::default' do
   context 'compiling the test recipe' do
 
     it 'converges successfully' do
-      expect(chef_run).to install_application_ruby('simple_ruby_app')
+      expect(chef_run).to deploy_application_ruby('simple_ruby_app')
       expect(chef_run).to create_user('simple_ruby_app')
       expect(chef_run).to deploy_deploy('simple_ruby_app')
     end

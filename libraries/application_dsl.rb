@@ -1,5 +1,5 @@
 def define_application(name, &block)
-  Chef::Resource::Application.define name, &block
+  Chef::Resource::ApplicationBase.define name, &block
 end
 
 def define_application_ruby(name, &block)

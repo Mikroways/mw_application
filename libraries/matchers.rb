@@ -4,12 +4,14 @@ if defined?(ChefSpec)
     ChefSpec.define_matcher :application_ruby
   end
 
-  def install_application(name)
-    ChefSpec::Matchers::ResourceMatcher.new(:application, :install, name)
-  end
+  %i(deploy force_deploy rollback delete).each do |action|
+    define_method("#{action}_application") do |name|
+      ChefSpec::Matchers::ResourceMatcher.new(:application, action, name)
+    end
 
-  def install_application_ruby(name)
-    ChefSpec::Matchers::ResourceMatcher.new(:application_ruby, :install, name)
+    define_method("#{action}_application_ruby") do |name|
+      ChefSpec::Matchers::ResourceMatcher.new(:application_ruby, action, name)
+    end
   end
 
 end
