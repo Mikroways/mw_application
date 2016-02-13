@@ -1,0 +1,34 @@
+rvm: 2.1
+
+sudo: required
+
+addons:
+  apt:
+    sources:
+      - chef-current-precise
+    packages:
+      - chefdk
+
+env:
+  matrix:
+    - PLATFORM='default-centos-67'
+    - PLATFORM='default-centos-71'
+    - PLATFORM='default-debian-7'
+    - PLATFORM='default-ubuntu-1404'
+
+install: echo "skip bundle install"
+
+services: docker
+
+before_script:
+  - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
+  - eval "$(/opt/chefdk/bin/chef shell-init bash)"
+
+script:
+#  - /opt/chefdk/bin/rubocop
+#  - /opt/chefdk/bin/foodcritic . --exclude spec
+  - rspec
+  - kitchen verify ${PLATFORM}
+
+after_script:
+#  - kitchen list
