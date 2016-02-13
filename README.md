@@ -1,5 +1,7 @@
 # Generic Aplication cookbook
 
+[![Build Status](https://travis-ci.org/Mikroways/mw_application.svg?branch=master)](https://travis-ci.org/Mikroways/mw_application)
+
 The Application cookbook  `mw_application` is a library cookbook that provides
 resource primitives (LWRP) for use in recipes. It also provides with helper methods
 to easily define new custom application resources
