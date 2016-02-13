@@ -25,6 +25,9 @@ platforms:
       - recipe[netstat]
       - recipe[git]
   - name: centos-7.1
+    driver_config:
+      provision_command:
+        - yum install -y iproute
     run_list:
       - recipe[yum]
       - recipe[netstat]

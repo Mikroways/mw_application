@@ -86,24 +86,24 @@ class Chef
       #       sensitive true
       #       notifies :run, "script[update something]"
       #     end
-      ##     
+      ##
       #   end
       def self.define(name, &block)
         klass = Class.new(self) do
 
           provides name.to_sym
 
-          class_eval <<-CLASS
-          @@define_block = nil
+          class  << self
 
-          def self.set_define_block(&block)
-            @@define_block = block
-          end
+            def set_define_block(&block)
+              @define_block = block
+            end
 
-          def self.define_block
-            @@define_block
+            def define_block
+              @define_block
+            end
+
           end
-          CLASS
 
           def initialize(name, run_context=nil)
             super
