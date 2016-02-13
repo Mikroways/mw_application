@@ -119,21 +119,20 @@ class Chef
       def deploy_resource(deploy_action)
         application_resource = new_resource
 
-        d = deploy new_resource.name do
-          repository new_resource.repository
-          revision new_resource.revision
-          deploy_to new_resource.path
-          purge_before_symlink new_resource.shared_directories
-          symlinks symlinks_hash
-          symlink_before_migrate symlink_before_migrate_hash
-          before_migrate new_resource.before_migrate
-          action deploy_action
-          migrate new_resource.migrate
-          migration_command new_resource.migration_command
-          environment new_resource.environment
-          provider Chef::Provider::Deploy::Revision
-        end
+        d = deploy new_resource.name
 
+        d.repository new_resource.repository
+        d.revision new_resource.revision
+        d.deploy_to new_resource.path
+        d.purge_before_symlink new_resource.shared_directories
+        d.symlinks symlinks_hash
+        d.symlink_before_migrate symlink_before_migrate_hash
+        d.before_migrate new_resource.before_migrate
+        d.action deploy_action
+        d.migrate new_resource.migrate
+        d.migration_command new_resource.migration_command
+        d.environment new_resource.environment
+        d.provider Chef::Provider::Deploy::Revision
         d.user new_resource.user
         d.application_resource = application_resource
 
