@@ -16,7 +16,11 @@ Platform support
 
 The following platforms have been tested with test kitchen
 
+* Debian 7
 * Ubuntu 14.04
+* CentOS 6.7
+* CentOS 7.1
+
 
 Cookbook dependencies
 ---------------------
@@ -26,7 +30,7 @@ Cookbook dependencies
 
 Other cookbooks may be required depending on the platform used:
 
-* apt so packages are updated if ubuntu/debian
+* apt/yum so packages are updated if ubuntu/debian/centos/rhel
 * git if your application will be deployed using git
 
 Usage

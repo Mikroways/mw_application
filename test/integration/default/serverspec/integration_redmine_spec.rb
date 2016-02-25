@@ -17,10 +17,6 @@ describe 'integration_test::default' do
     it { should be_listening }
   end
 
-  describe command('curl "http://localhost:5000/login"') do
-    its(:stdout) { should match %r{form action="\/login"} }
-  end
-
   describe file('/opt/redmine_app1') do
     it { should be_directory }
     it { should be_mode 750 }
@@ -30,9 +26,5 @@ describe 'integration_test::default' do
 
   describe port(5001) do
     it { should be_listening }
-  end
-
-  describe command('curl "http://localhost:5001/login"') do
-    its(:stdout) { should match %r{form action="\/login"} }
   end
 end

@@ -12,10 +12,8 @@ class Chef
           @new_resource.respond_to?(:application_resource)
       end
 
-      alias_method :load_current_resource_without_application_resource,
-                   :load_current_resource
-      alias_method :load_current_resource,
-                   :load_current_resource_with_application_resource
+      alias load_current_resource_without_application_resource load_current_resource
+      alias load_current_resource load_current_resource_with_application_resource
       include Chef::DSL::IncludeRecipe
     end
 
@@ -41,13 +39,13 @@ class Chef
       end
 
       action :rollback do
-        fail 'Application cannot be rolled back if not deployed before' unless
+        raise 'Application cannot be rolled back if not deployed before' unless
           node[new_resource.node_attribute][new_resource.resource_name][new_resource.name]
         deploy_resource :rollback
       end
 
       action :delete do
-        fail 'Application cannot be deleted if not deployed before' unless
+        raise 'Application cannot be deleted if not deployed before' unless
           node[new_resource.node_attribute][new_resource.resource_name][new_resource.name]
         delete_application
       end
