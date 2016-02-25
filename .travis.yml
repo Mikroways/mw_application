@@ -23,6 +23,9 @@ services: docker
 before_script:
   - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
   - eval "$(/opt/chefdk/bin/chef shell-init bash)"
+  - rubocop -v
+  - rspec -v
+  - foodcritic -V
   - /opt/chefdk/embedded/bin/chef gem install kitchen-docker
 
 script:
@@ -31,5 +34,3 @@ script:
   - foodcritic .
   - kitchen verify ${PLATFORM}
 
-after_script:
-#  - kitchen list
