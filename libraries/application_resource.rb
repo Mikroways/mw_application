@@ -2,21 +2,23 @@ require 'chef/resource/lwrp_base'
 
 class Chef
   class Resource
+    # Deploy resource monkey patched to add application_resource accessor
     class Deploy < Chef::Resource
       attr_accessor :application_resource
     end
 
+    # Application base class that wraps the deployment of applications
+    # creating user & directories for application
     class ApplicationBase < Chef::Resource::LWRPBase
       provides :application
 
       self.resource_name = :application
 
-
       actions :deploy, :force_deploy, :rollback, :delete
       default_action :deploy
 
-      attribute :name,  kind_of: String, name_property: true, required: true
-      attribute :user, kind_of: String, required: true, default: lazy {|resource| resource.name}
+      attribute :name, kind_of: String, name_property: true, required: true
+      attribute :user, kind_of: String, required: true, default: lazy { |resource| resource.name }
       attribute :group, kind_of: String
       attribute :path, kind_of: String, required: true
       attribute :shared_directories, kind_of: Array, default: []
@@ -30,12 +32,10 @@ class Chef
       attribute :migrate, kind_of: [TrueClass, FalseClass], default: false
       attribute :migration_command, kind_of: String
 
-
-      def before_migrate(arg=nil, &block)
+      def before_migrate(arg = nil, &block)
         arg ||= block
-        set_or_return(:before_migrate, arg, :kind_of => [Proc, String])
+        set_or_return(:before_migrate, arg, kind_of: [Proc, String])
       end
-
 
       def shared_path
         "#{path}/shared"
@@ -49,12 +49,12 @@ class Chef
         "#{shared_path}/var/socket"
       end
 
-      def set_provider(provider)
+      def set_provider(_provider)
         @provider = Chef::Provider::ApplicationBase
       end
 
       def set_defaults(attributes)
-        Hash[attributes.map{|n,v| ["@#{n}",v] }].each(&method(:instance_variable_set))
+        Hash[attributes.map { |n, v| ["@#{n}", v] }].each(&method(:instance_variable_set))
       end
 
       def set_before_migrate(&block)
@@ -90,41 +90,35 @@ class Chef
       #   end
       def self.define(name, &block)
         klass = Class.new(self) do
-
           provides name.to_sym
 
-          class  << self
-
+          class << self
             def set_define_block(&block)
               @define_block = block
             end
 
-            def define_block
-              @define_block
-            end
-
+            attr_reader :define_block
           end
 
-          def initialize(name, run_context=nil)
+          def initialize(name, run_context = nil)
             super
             set_provider nil
             delegate_initialization
           end
-
         end
         klass.resource_name = name.to_sym
         klass.set_define_block(&block)
         klass_name = Chef::Mixin::ConvertToClassName.convert_to_class_name(name)
-        self.const_set klass_name, klass unless defined?(klass_name)
+        const_set klass_name, klass unless defined?(klass_name)
         klass
       end
 
       def delegate_initialization
         ApplicationDelegator.new(self).instance_eval(&self.class.define_block)
       end
-
     end
 
+    # Custom helper class to use as simple delegator
     class ApplicationDelegator < SimpleDelegator
       def defaults(attributes)
         set_defaults(attributes)
@@ -138,6 +132,5 @@ class Chef
         set_provider(provider)
       end
     end
-
   end
 end

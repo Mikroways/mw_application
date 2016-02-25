@@ -1,23 +1,29 @@
 require 'chef/provider/lwrp_base'
 class Chef
   class Provider
+    # Monkey patch Deploy Provider resource adding application_rsource
+    # attribute to be available inside custom hooks
     class Deploy < Chef::Provider
       attr_accessor :application_resource
 
       def load_current_resource_with_application_resource
         load_current_resource_without_application_resource
-        @application_resource = @new_resource.application_resource if @new_resource.respond_to?(:application_resource)
+        @application_resource = @new_resource.application_resource if
+          @new_resource.respond_to?(:application_resource)
       end
 
-      alias_method :load_current_resource_without_application_resource, :load_current_resource
-      alias_method :load_current_resource, :load_current_resource_with_application_resource
+      alias_method :load_current_resource_without_application_resource,
+                   :load_current_resource
+      alias_method :load_current_resource,
+                   :load_current_resource_with_application_resource
       include Chef::DSL::IncludeRecipe
     end
 
+    # Application base class that will create user, required directories
+    # as a deploy deploy resource
     class ApplicationBase < Chef::Provider::LWRPBase
       attr_accessor :shared_path, :socket
       provides :application
-
       use_inline_resources
 
       def load_current_resource
@@ -35,25 +41,26 @@ class Chef
       end
 
       action :rollback do
-        raise 'Application cannot be rolled back if not deployed before' unless
+        fail 'Application cannot be rolled back if not deployed before' unless
           node[new_resource.node_attribute][new_resource.resource_name][new_resource.name]
         deploy_resource :rollback
       end
 
       action :delete do
-        raise 'Application cannot be deleted if not deployed before' unless
+        fail 'Application cannot be deleted if not deployed before' unless
           node[new_resource.node_attribute][new_resource.resource_name][new_resource.name]
         delete_application
       end
 
       def symlinks_hash
-        Hash[new_resource.shared_directories.map{|d| [d,d]}] if new_resource.shared_directories
+        Hash[new_resource.shared_directories.map { |d| [d, d] }] if
+          new_resource.shared_directories
       end
 
       def symlink_before_migrate_hash
-        Hash[new_resource.symlink_before_migrate.map{|d| [d,d]}] if new_resource.symlink_before_migrate
+        Hash[new_resource.symlink_before_migrate.map { |d| [d, d] }] if
+          new_resource.symlink_before_migrate
       end
-
 
       def save_node_attributes
         node.set[new_resource.node_attribute] = { new_resource.resource_name => {} } unless
@@ -78,10 +85,10 @@ class Chef
         save_node_attributes
 
         user new_resource.user do
-          supports    :manage_home => true
+          supports manage_home: true
           manage_home true
-          home        "/home/#{new_resource.user}"
-          shell       '/bin/bash'
+          home "/home/#{new_resource.user}"
+          shell '/bin/bash'
         end
 
         base_dir = directory new_resource.path do
@@ -99,9 +106,9 @@ class Chef
         end
         other_directories << socket
 
-        directories += other_directories.map {|x| ::File.dirname x}
+        directories += other_directories.map { |x| ::File.dirname x }
 
-        directories += new_resource.shared_directories.map {|x| "#{shared_path}/#{x}"}
+        directories += new_resource.shared_directories.map { |x| "#{shared_path}/#{x}" }
 
         directories.uniq.each do |dir|
           d = directory dir do
@@ -135,15 +142,12 @@ class Chef
         d.provider Chef::Provider::Deploy::Revision
         d.user new_resource.user
         d.application_resource = application_resource
-
       end
 
       # Dlete attributes from node
       def delete_application
-        node.rm(new_resource.node_attribute,new_resource.resource_name,new_resource.name)
+        node.rm(new_resource.node_attribute, new_resource.resource_name, new_resource.name)
       end
-
-
     end
   end
 end

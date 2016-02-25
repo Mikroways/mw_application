@@ -7,9 +7,8 @@
 require 'spec_helper'
 
 describe 'application_dsl_test::default' do
-
   before do
-    stub_command("git --version >/dev/null").and_return(true)
+    stub_command('git --version >/dev/null').and_return(true)
   end
 
   let(:chef_run_my_app) do
@@ -31,7 +30,6 @@ describe 'application_dsl_test::default' do
   end
 
   context 'stepping into my_app[app_name_dsl] resource' do
-
     it 'saves all node attributes' do
       attributes = chef_run_my_app.node['applications']['my_app']['app_name_dsl']
       expect(attributes).not_to be_empty
@@ -67,7 +65,6 @@ describe 'application_dsl_test::default' do
   end
 
   context 'stepping into my_ruby_app[ruby_app_name_dsl] resource' do
-
     it 'saves all node attributes' do
       attributes = chef_run_my_ruby_app.node['applications']['my_ruby_app']['ruby_app_name_dsl']
       expect(attributes).not_to be_empty

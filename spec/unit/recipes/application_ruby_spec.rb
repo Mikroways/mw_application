@@ -1,9 +1,8 @@
 require 'spec_helper'
 
 describe 'application_ruby_test::default' do
-
   before do
-    stub_command("git --version >/dev/null").and_return(true)
+    stub_command('git --version >/dev/null').and_return(true)
   end
 
   let(:chef_run) do
@@ -15,7 +14,6 @@ describe 'application_ruby_test::default' do
   end
 
   context 'compiling the test recipe' do
-
     it 'converges successfully' do
       expect(chef_run).to deploy_application_ruby('simple_ruby_app')
       expect(chef_run).to create_user('simple_ruby_app')
@@ -29,7 +27,7 @@ describe 'application_ruby_test::default' do
       expect(attributes).not_to be_empty
       expect(attributes.keys.sort)
         .to eq %w(user group path shared_directories repository migration_command migrate environment
-        revision symlink_before_migrate deploy_action socket ruby)
+                  revision symlink_before_migrate deploy_action socket ruby)
         .sort
       expect(attributes['ruby']).to eq '2.2.4'
     end
@@ -45,9 +43,7 @@ describe 'application_ruby_test::default' do
 
     it 'install bundler gem' do
       expect(chef_run).to install_rbenv_gem('bundler')
-      .with(rbenv_version: '2.2.4')
+        .with(rbenv_version: '2.2.4')
     end
-
   end
-
 end

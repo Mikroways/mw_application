@@ -1,5 +1,7 @@
 class Chef
   class Provider
+    # Ruby application provider. It will install ruby using rbenv
+    # All rbenv cookbooks helpers are provided
     class ApplicationRuby < ApplicationBase
       provides :application_ruby
 
@@ -23,7 +25,6 @@ class Chef
         super
         node.set[new_resource.node_attribute][new_resource.resource_name][new_resource.name]['ruby'] = new_resource.ruby
       end
-
     end
   end
 end

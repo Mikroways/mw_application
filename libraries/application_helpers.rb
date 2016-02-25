@@ -1,5 +1,9 @@
 module Application
   module Helper
+    # Custom ruby helpers used by common ruby applications as:
+    # * rails application environment variables
+    # * default rvbenv path
+    # * default rvbenv root
     module Ruby
       def application_rails_environment
         application_ruby_environment.merge 'RAILS_ENV' => 'production'
@@ -20,8 +24,6 @@ module Application
       def rbenv_root
         node['rbenv']['root_path']
       end
-
     end
-
   end
 end

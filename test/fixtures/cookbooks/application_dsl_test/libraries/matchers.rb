@@ -15,4 +15,3 @@ if defined?(ChefSpec)
   end
 
 end
-

@@ -1,0 +1,26 @@
+Style/SymbolProc:
+  Exclude:
+    - 'libraries/application_resource.rb'
+
+Lint/NestedMethodDefinition:
+  Exclude:
+    - 'libraries/application_resource.rb'
+
+Metrics/AbcSize:
+  Max: 44
+
+Metrics/ClassLength:
+  Max: 103
+
+Metrics/MethodLength:
+  Max: 26
+
+Style/AccessorMethodName:
+  Exclude:
+    - 'libraries/application_resource.rb'
+    - 'libraries/application_ruby_resource.rb'
+
+
+LineLength:
+  Max: 200
+
