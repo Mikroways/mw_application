@@ -7,19 +7,18 @@ Lint/NestedMethodDefinition:
     - 'libraries/application_resource.rb'
 
 Metrics/AbcSize:
-  Max: 44
+  Max: 50
 
 Metrics/ClassLength:
-  Max: 103
+  Max: 150
 
 Metrics/MethodLength:
-  Max: 26
+  Max: 40
 
 Style/AccessorMethodName:
   Exclude:
     - 'libraries/application_resource.rb'
     - 'libraries/application_ruby_resource.rb'
-
 
 LineLength:
   Max: 200
