@@ -37,6 +37,11 @@ class Chef
         set_or_return(:before_migrate, arg, kind_of: [Proc, String])
       end
 
+      def before_restart(arg = nil, &block)
+        arg ||= block
+        set_or_return(:before_restart, arg, kind_of: [Proc, String])
+      end
+
       def shared_path
         "#{path}/shared"
       end
@@ -59,6 +64,10 @@ class Chef
 
       def set_before_migrate(&block)
         @before_migrate = block
+      end
+
+      def set_before_restart(&block)
+        @before_restart = block
       end
 
       # Creates a class dinamically as subclass of self and delegates methods:
@@ -126,6 +135,10 @@ class Chef
 
       def before_migrate(&block)
         set_before_migrate(&block)
+      end
+
+      def before_restart(&block)
+        set_before_restart(&block)
       end
 
       def provider(provider)

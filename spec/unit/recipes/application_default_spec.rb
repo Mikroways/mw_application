@@ -60,6 +60,7 @@ describe 'application_test::default' do
       expect(chef_run).to create_directory('/dir/shared')
         .with(
           recursive: true,
+          group: 'group',
           user: 'simple_app')
     end
 
@@ -69,6 +70,7 @@ describe 'application_test::default' do
       expect(chef_run).to create_directory('/dir/shared/config')
         .with(
           recursive: true,
+          group: 'group',
           user: 'simple_app'
         )
     end
@@ -77,6 +79,7 @@ describe 'application_test::default' do
       expect(chef_run).to create_directory('/dir/shared/var')
         .with(
           recursive: true,
+          group: 'group',
           user: 'simple_app'
         )
     end
@@ -86,6 +89,7 @@ describe 'application_test::default' do
         expect(chef_run).to create_directory("/dir/shared/#{dir}")
           .with(
             recursive: true,
+            group: 'group',
             user: 'simple_app'
           )
       end
@@ -104,6 +108,7 @@ describe 'application_test::default' do
             migrate: false,
             migration_command: 'migration command',
             environment: { 'VAR' => 'VALUE' },
+            group: 'group',
             user: 'simple_app')
       end
     end

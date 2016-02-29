@@ -124,9 +124,12 @@ attributes for custom development needs
   dump hash as YAML file
 - `before_migrate` -  Proc with custom code to be used as callback to
   `deploy_revision` resource. This callback can use a custom helper named
-`application_resource` that will return current resource, this is an application
-resource or a custom subclass of it. Inside this Proc, other helpers provided by
-deploy resource are available as `new_resource`, `shared_path` and `release_path`
+  `application_resource` that will return current resource, this is an application
+  resource or a custom subclass of it. Inside this Proc, other helpers provided by
+  deploy resource are available as `new_resource`, `shared_path` and `release_path`
+- `before_restart` -  Proc with custom code to be used as callback to
+  `deploy_revision` resource. This callback can use a custom helper named
+  `application_resource` as explained for `before_migrate`
 - `environment`: environment variables specified as hash of key values. Defaults
   to nil
 - `migration_command`: string with command to be run. Default nil. Command will

@@ -113,6 +113,7 @@ class Chef
             recursive true
           end
           d.user new_resource.user
+          d.group new_resource.group
         end
       end
 
@@ -133,12 +134,14 @@ class Chef
         d.symlinks symlinks_hash
         d.symlink_before_migrate symlink_before_migrate_hash
         d.before_migrate new_resource.before_migrate
+        d.before_restart new_resource.before_restart
         d.action deploy_action
         d.migrate new_resource.migrate
         d.migration_command new_resource.migration_command
         d.environment new_resource.environment
         d.provider Chef::Provider::Deploy::Revision
         d.user new_resource.user
+        d.group new_resource.group
         d.application_resource = application_resource
       end
 

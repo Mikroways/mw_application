@@ -3,10 +3,11 @@ app = redmine 'redmine_app' do
   ruby '2.2.4'
   variables 'database' => {
     'production' => {
-      'adapter'   => 'sqlite3',
-      'database'  => 'db/production.sqlite3',
-      'pool'      => 5,
-      'timeout'   => 5000
+      'adapter'  => 'sqlite3',
+      'database' => 'db/production.sqlite3',
+      'pool'     => 5,
+      'timeout'  => 5000,
+      'type'     => 'mysql'
     }
   }
   migrate true
