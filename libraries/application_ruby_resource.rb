@@ -9,8 +9,8 @@ class Chef
 
       attribute :ruby, kind_of: String, required: true
 
-      def set_provider(_provider)
-        @provider = Chef::Provider::ApplicationRuby
+      def application_provider
+        Chef::Provider::ApplicationRuby
       end
     end
   end

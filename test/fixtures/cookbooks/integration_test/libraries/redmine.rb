@@ -1,14 +1,20 @@
 define_application_ruby 'redmine' do
-  defaults shared_directories: %w(log tmp files plugins public/themes/custom),
-           repository: 'https://github.com/redmine/redmine.git',
-           revision: '3.1-stable',
-           environment: application_rails_environment,
-           migration_command: <<-MIGRATE
+  shared_directories %w(log tmp files plugins public/themes/custom)
+  repository 'https://github.com/redmine/redmine.git'
+  revision '3.1-stable'
+  environment application_rails_environment
+  migration_command <<-MIGRATE
     bundle exec rake db:migrate &&
     bundle exec rake redmine:plugins:migrate &&
     bundle exec rake generate_secret_token &&
     REDMINE_LANG=en bundle exec rake redmine:load_default_data
-           MIGRATE
+  MIGRATE
+
+  helpers do
+    def database_content
+      variables['database'].to_yaml
+    end
+  end
 
   before_migrate do
     package new_resource
@@ -44,7 +50,7 @@ define_application_ruby 'redmine' do
     file "#{release_path}/config/database.yml" do
       owner application_resource.user
       mode '0640'
-      content application_resource.variables['database'].to_yaml
+      content application_resource.database_content
       sensitive true
       notifies :run, 'rbenv_script[bundle update]'
     end
@@ -53,7 +59,7 @@ define_application_ruby 'redmine' do
     file "#{shared_path}/config/database.yml" do
       owner application_resource.user
       mode '0640'
-      content application_resource.variables['database'].to_yaml
+      content application_resource.database_content
       notifies :run, 'rbenv_script[bundle update]'
     end
 

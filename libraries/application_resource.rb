@@ -54,33 +54,18 @@ class Chef
         "#{shared_path}/var/socket"
       end
 
-      def set_provider(_provider)
-        @provider = Chef::Provider::ApplicationBase
+      # Subclasses must return expected provider if changes from default application_provider
+      def application_provider
+        Chef::Provider::ApplicationBase
       end
 
-      def set_defaults(attributes)
-        Hash[attributes.map { |n, v| ["@#{n}", v] }].each(&method(:instance_variable_set))
-      end
-
-      def set_before_migrate(&block)
-        @before_migrate = block
-      end
-
-      def set_before_restart(&block)
-        @before_restart = block
-      end
-
-      # Creates a class dinamically as subclass of self and delegates methods:
-      #   #set_defaults(args)
-      #   #set_before_migrate(&block)
-      #   #set_provider(provider)
-      #
+      # Creates a class dinamically as subclass of self and delegates methods
       # using ApplicationDelegator class (Delegator pattern) and allowing this method to
       # dinamically define resources with a custom DSL like:
       #
       # Chef::Resource::Application.define 'my_application', do
-      #   defaults  shared_directories: %w(log tmp files),
-      #             repository: 'https://github.com/user/application.git',
+      #   shared_directories %w(log tmp files)
+      #   repository 'https://github.com/user/application.git'
       #   before_migrate do
       #     execute "update something" do
       #       cwd release_path
@@ -111,7 +96,7 @@ class Chef
 
           def initialize(name, run_context = nil)
             super
-            set_provider nil
+            @provider = application_provider
             delegate_initialization
           end
         end
@@ -133,16 +118,8 @@ class Chef
         set_defaults(attributes)
       end
 
-      def before_migrate(&block)
-        set_before_migrate(&block)
-      end
-
-      def before_restart(&block)
-        set_before_restart(&block)
-      end
-
-      def provider(provider)
-        set_provider(provider)
+      def helpers(&block)
+        __getobj__.instance_eval(&block)
       end
     end
   end

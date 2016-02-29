@@ -97,5 +97,6 @@ describe 'application_dsl_test::default' do
         path: '/opt/ruby_app_name_dsl'
       )
     end
+
   end
 end
