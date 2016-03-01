@@ -203,11 +203,23 @@ This helper is used as a library in your cookbook and for example:
 
 ```ruby
   define_application 'my_app' do
-    defaults shared_directories: %w(log tmp files public),
-             repository: 'https://github.com/user/app.git'
+    # Set default values
+    shared_directories %w(log tmp files public),
+    repository 'https://github.com/user/app.git'
+
+    helpers do
+      def my_helper
+      end
+    end
 
     before_migrate do
       # CUSTOM CODE
+      # application_resource.my_helper can be used
+    end
+
+    before_restart do
+      # CUSTOM CODE
+      # application_resource.my_helper can be used
     end
   end
 ```
