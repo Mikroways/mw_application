@@ -99,11 +99,23 @@ like user, directory and deploy_revision. The implementation of the application
 resource is a wrapper resource that avoids repeating code for user creation and
 shared directories structure creation.
 
-The `:install action` creates a user and deploys application as that user,
+The `:deploy action` creates a user and deploys application as that user,
 running only before_migrate callback and simplifying the way deploy_revision
 resource is used, basically using deployment convention previously described.
 It also set node attributes so they can be used using search or reading this
-attributes for custom development needs
+attributes for custom development needs.
+
+#### Actions
+
+Actions are the same for original chef deploy resource:
+
+- `:deploy`
+- `:force_deploy`
+- `:rollback`
+
+An additional `:delete` action is provided to remove saved node attributes, but
+it will not delete installed application from server. This action must be run
+manually.
 
 #### Parameters
 
@@ -182,8 +194,8 @@ Some tips when coding `before_migrate` block
 Inside this block you can use any resource chef knows, but some useful helpers
 are not available inside `Chef::Provider` class. This is the case of
 `value_for_platform` or `value_for_platform_family`. When you need this helpers
-inside `before_migrate` block you can call them via `new_resource` because this
-DSL methods are included by `Chef::Resource` class. 
+inside `before_migrate` block you can call them via `application_resource` or `new_resource`
+because this DSL methods are included by `Chef::Resource` class. 
 
 ```ruby
 
@@ -223,6 +235,8 @@ This helper is used as a library in your cookbook and for example:
     end
   end
 ```
+
+*Take a look at the custom helper defined. It can be accessed via `application_resource`*
 
 The above example will create a resource named my_app that can be used in other
 cookbooks as:
