@@ -95,6 +95,10 @@ describe 'application_test::default' do
       end
     end
 
+    it 'creates test directory because of before_deploy' do
+      expect(chef_run).to create_directory 'test_before_deploy'
+    end
+
     context 'deploy resource' do
       it 'deploys application' do
         expect(chef_run).to deploy_deploy('simple_app')

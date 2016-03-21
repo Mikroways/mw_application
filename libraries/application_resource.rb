@@ -27,10 +27,14 @@ class Chef
       attribute :symlink_before_migrate, kind_of: Array, default: %w(config/database.yml)
       attribute :deploy_action, kind_of: Symbol, default: :deploy, is: [:deploy, :force_deploy, :rollback]
       attribute :node_attribute, kind_of: String, default: 'applications'
-      attribute :variables, kind_of: Hash, default: {}
       attribute :environment, kind_of: Hash
       attribute :migrate, kind_of: [TrueClass, FalseClass], default: false
       attribute :migration_command, kind_of: String
+
+      def before_deploy(arg = nil, &block)
+        arg ||= block
+        set_or_return(:before_deploy, arg, kind_of: Proc)
+      end
 
       def before_migrate(arg = nil, &block)
         arg ||= block
@@ -114,8 +118,9 @@ class Chef
 
     # Custom helper class to use as simple delegator
     class ApplicationDelegator < SimpleDelegator
-      def defaults(attributes)
-        set_defaults(attributes)
+
+      def class_helpers(&block)
+        __getobj__.class.instance_eval(&block)
       end
 
       def helpers(&block)

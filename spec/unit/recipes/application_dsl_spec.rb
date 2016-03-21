@@ -85,6 +85,9 @@ describe 'application_dsl_test::default' do
       end
     end
 
+    it 'creates database file before deploying' do
+      expect(chef_run_my_ruby_app).to create_file '/opt/ruby_app_name_dsl/shared/database_new.yml'
+    end
     it 'deploys application' do
       expect(chef_run_my_ruby_app).to deploy_deploy('ruby_app_name_dsl')
     end
@@ -94,6 +97,7 @@ describe 'application_dsl_test::default' do
         shared_directories: %w(e f g/h),
         repository: 'other_repo',
         revision: 'other_rev',
+        sample: 'sample_value',
         path: '/opt/ruby_app_name_dsl'
       )
     end

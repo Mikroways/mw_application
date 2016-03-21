@@ -20,7 +20,7 @@ class Chef
     # Application base class that will create user, required directories
     # as a deploy deploy resource
     class ApplicationBase < Chef::Provider::LWRPBase
-      attr_accessor :shared_path, :socket
+      attr_accessor :shared_path, :socket, :application_resource
       provides :application
       use_inline_resources
 
@@ -28,6 +28,7 @@ class Chef
         super
         @shared_path = @new_resource.shared_path
         @socket = @new_resource.socket
+        @application_resource = @new_resource
       end
 
       action :deploy do
@@ -115,6 +116,8 @@ class Chef
           d.user new_resource.user
           d.group new_resource.group
         end
+
+        instance_eval(&new_resource.before_deploy) if new_resource.before_deploy
       end
 
       def deploy_with_action(deploy_action)

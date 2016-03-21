@@ -1,6 +1,6 @@
 # Generic Aplication cookbook
 
-[![Build Status](https://travis-ci.org/Mikroways/mw_application.svg?branch=master)](https://travis-ci.org/Mikroways/mw_application)
+[![Build Status](https://travis-ci.org/Mikroways/mw_application.svg?branch=master)](https://travis-ci.org/Mikroways/mw_application) [![Cookbook Version](https://img.shields.io/cookbook/v/mw_application.svg)](https://supermarket.chef.io/cookbooks/mw_application)
 
 The Application cookbook  `mw_application` is a library cookbook that provides
 resource primitives (LWRP) for use in recipes to easily deploy applications. It also provides with helper methods
@@ -100,7 +100,7 @@ resource is a wrapper resource that avoids repeating code for user creation and
 shared directories structure creation.
 
 The `:deploy action` creates a user and deploys application as that user,
-running only before_migrate callback and simplifying the way deploy_revision
+running before_deploy callback and simplifying the way deploy_revision
 resource is used, basically using deployment convention previously described.
 It also set node attributes so they can be used using search or reading this
 attributes for custom development needs.
@@ -134,6 +134,12 @@ manually.
   deployment
 - `database` - hash to be used for custom code as developer wants. For example,
   dump hash as YAML file
+- `before_deploy` -  Proc with custom code to be used as callback to build
+  proper environment so deployment will be easier to manage. This callback can use
+  a custom helper named `application_resource` that will return current resource,
+  this is an application resource or a custom subclass of it. Inside this Proc,
+  other helpers provided by deploy resource are available as `new_resource`,
+  `shared_path` and `release_path`
 - `before_migrate` -  Proc with custom code to be used as callback to
   `deploy_revision` resource. This callback can use a custom helper named
   `application_resource` that will return current resource, this is an application
@@ -168,6 +174,12 @@ For example:
 
     ruby '2.2.4'
 
+    before_deploy do
+      file "#{shared_path}/config/database.yml" do
+        ...
+      end
+    end
+
     before_migrate do
 
       # Will be run as root
@@ -188,8 +200,9 @@ For example:
   end
 ```
 
-Some tips when coding `before_migrate` block
+Some tips when coding `callbacks` blocks
 --------------------------------------------
+This applies to `before_deploy`, `before_migrate` and `before_restart` callbacks
 
 Inside this block you can use any resource chef knows, but some useful helpers
 are not available inside `Chef::Provider` class. This is the case of
@@ -219,9 +232,22 @@ This helper is used as a library in your cookbook and for example:
     shared_directories %w(log tmp files public),
     repository 'https://github.com/user/app.git'
 
+    class_helpers do
+      attribute :db_name, kind_of: String, required: true, default: lazy { |resource| resource.name }
+      attribute :db_user, kind_of: String, default: lazy { |resource| resource.name }
+      attribute :db_password, kind_of: String
+      attribute :db_host, kind_of: String, default: '127.0.0.1'
+      attribute :db_adapter, kind_of: String, required: true
+    end
+
     helpers do
       def my_helper
       end
+    end
+
+    before_deploy do
+      # CUSTOM CODE
+      # application_resource.my_helper can be used
     end
 
     before_migrate do
@@ -244,6 +270,7 @@ cookbooks as:
 ```ruby
   my_app 'name' do
     path '/opt/application/name'
+    db_adapter 'sqlite'
   end
 ```
 

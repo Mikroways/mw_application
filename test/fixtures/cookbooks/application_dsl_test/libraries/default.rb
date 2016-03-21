@@ -3,7 +3,7 @@ define_application 'my_app' do
   repository 'some_repo'
   revision 'some_rev'
   symlink_before_migrate %w(database.yml)
-  before_migrate do
+  before_deploy do
     file "#{application_resource.shared_path}/database.yml"
   end
 end
@@ -14,13 +14,17 @@ define_application_ruby 'my_ruby_app' do
   revision 'other_rev'
   ruby '2.2.4'
   symlink_before_migrate %w(database_new.yml)
-  before_migrate do
-    file "#{application_resource.shared_path}/#{application_resource.database.name}"
+  before_deploy do
+    file "#{application_resource.shared_path}/#{application_resource.database_name}"
   end
 
   helpers do
     def database_name
       'database_new.yml'
     end
+  end
+
+  class_helpers do
+    attribute :sample, kind_of: String
   end
 end
