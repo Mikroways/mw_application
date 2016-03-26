@@ -119,7 +119,6 @@ class Chef
 
     # Custom helper class to use as simple delegator
     class ApplicationDelegator < SimpleDelegator
-
       def class_helpers(&block)
         __getobj__.class.instance_eval(&block)
       end

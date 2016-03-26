@@ -1,16 +1,24 @@
+#inherit_from: .rubocop_todo.yml
+
 Style/SymbolProc:
   Exclude:
     - 'libraries/application_resource.rb'
+    - 'test/fixtures/cookbooks/integration_test/libraries/redmine.rb'
+    - 'test/fixtures/cookbooks/integration_test/libraries/wordpress.rb'
+
+Style/Alias:
+  Exclude:
+    - 'libraries/application_provider.rb'
 
 Lint/NestedMethodDefinition:
   Exclude:
     - 'libraries/application_resource.rb'
 
 Metrics/AbcSize:
-  Max: 50
+  Max: 52
 
 Metrics/ClassLength:
-  Max: 150
+  Max: 234
 
 Metrics/MethodLength:
   Max: 40
@@ -19,6 +27,12 @@ Style/AccessorMethodName:
   Exclude:
     - 'libraries/application_resource.rb'
     - 'libraries/application_ruby_resource.rb'
+
+Metrics/CyclomaticComplexity:
+  Max: 8
+
+Metrics/PerceivedComplexity:
+  Max: 8
 
 LineLength:
   Max: 200

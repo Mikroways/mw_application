@@ -21,7 +21,7 @@ class Chef
     # as a deploy deploy resource
     class ApplicationBase < Chef::Provider::LWRPBase
       attr_accessor :shared_path, :socket, :application_resource, :use_remote_file, :source_file,
-        :release_slug, :release_dir, :release_path
+                    :release_slug, :release_dir, :release_path
       provides :application
       use_inline_resources
 
@@ -51,8 +51,8 @@ class Chef
         requirements.assert(:rollback, :delete) do |a|
           a.assertion do
             node[@new_resource.node_attribute] &&
-            node[@new_resource.node_attribute][@new_resource.resource_name] &&
-            node[@new_resource.node_attribute][@new_resource.resource_name][@new_resource.name]
+              node[@new_resource.node_attribute][@new_resource.resource_name] &&
+              node[@new_resource.node_attribute][@new_resource.resource_name][@new_resource.name]
           end
           a.failure_message(Chef::Exceptions::UnsupportedAction,
                             'Application cannot be rolled back nor deleted when not deployed before')
@@ -61,10 +61,10 @@ class Chef
         requirements.assert(:all_actions) do |a|
           a.assertion do
             !@new_resource.repository.nil? && @new_resource.source.nil? ||
-            @new_resource.repository.nil? && !@new_resource.source.nil?
+              @new_resource.repository.nil? && !@new_resource.source.nil?
           end
           a.failure_message(Chef::Exceptions::InvalidKeyAttribute,
-             'Application deployment conflict with source or repository attributes')
+                            'Application deployment conflict with source or repository attributes')
         end
 
         requirements.assert(:all_actions) do |a|
@@ -72,7 +72,7 @@ class Chef
             @use_remote_file && md5_hash?(@release_slug) || !@use_remote_file
           end
           a.failure_message(Chef::Exceptions::InvalidKeyAttribute,
-             "Invalid release_slug:#{@release_slug} for #{@new_resource.source}")
+                            "Invalid release_slug:#{@release_slug} for #{@new_resource.source}")
         end
       end
 
@@ -179,8 +179,7 @@ class Chef
         "#{shared}/cache"
       end
 
-      def deploy_from_remote_file_resource(deploy_action)
-
+      def deploy_from_remote_file_resource(_deploy_action)
         prepare_directory_structure
 
         install_remote_source
@@ -219,16 +218,16 @@ class Chef
       end
 
       private
+
       def find_release_slug
         if !::File.exist?(source_file)
-          shell_out!("curl -s '#{@new_resource.source}' | md5sum | grep --only-matching -m 1 '^[0-9a-f]*'").
-            stdout.chomp("\n")
+          shell_out!("curl -s '#{@new_resource.source}' | md5sum | grep --only-matching -m 1 '^[0-9a-f]*'")
+            .stdout.chomp("\n")
         else
-          shell_out!("md5sum #{source_file} | grep --only-matching -m 1 '^[0-9a-f]*'").
-            stdout.chomp("\n")
+          shell_out!("md5sum #{source_file} | grep --only-matching -m 1 '^[0-9a-f]*'")
+            .stdout.chomp("\n")
         end
       end
-
 
       def md5_hash?(string)
         string =~ /^[0-9a-f]{32}$/
@@ -260,33 +259,33 @@ class Chef
           code <<-EOH
             tar xfz #{source} --strip-components=1 -C #{extract_path}
           EOH
-            not_if  "test \"$(ls -A #{extract_path})\"" #test "$(ls -A /dir)" is true when /dir has files
+          not_if "test \"$(ls -A #{extract_path})\"" # test "$(ls -A /dir)" is true when /dir has files
         end
         script.user new_resource.user
         script.group new_resource.group
       end
 
       def update_shared_directories
-         new_resource.shared_directories.each do |dir|
+        new_resource.shared_directories.each do |dir|
           directory "#{release_path}/#{dir}" do
             recursive true
             action :delete
           end
-         end
+        end
 
-         new_resource.symlink_before_migrate.each do |file|
-           file "#{release_path}/#{file}" do
-             action :delete
-           end
-         end
+        new_resource.symlink_before_migrate.each do |file|
+          file "#{release_path}/#{file}" do
+            action :delete
+          end
+        end
 
-         (new_resource.shared_directories +
-           new_resource.symlink_before_migrate).each do |resource|
-           l = link "#{release_path}/#{resource}" do
-             to "#{shared_path}/#{resource}"
-           end
-           l.owner new_resource.user
-           l.group new_resource.group
+        (new_resource.shared_directories +
+          new_resource.symlink_before_migrate).each do |resource|
+          l = link "#{release_path}/#{resource}" do
+            to "#{shared_path}/#{resource}"
+          end
+          l.owner new_resource.user
+          l.group new_resource.group
         end
       end
 

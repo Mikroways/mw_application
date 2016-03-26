@@ -37,7 +37,7 @@ describe 'integration_test::from_source' do
   end
 
   describe command('md5sum /opt/wordpress/releases/wordpress-4.4.2.tar.gz | grep --only-matching -m 1 \'^[0-9a-f]*\' | tr -d \'\n\'') do
-   its(:stdout)  { should eq release }
+    its(:stdout) { should eq release }
   end
 
   describe file('/opt/wordpress/current') do
@@ -46,5 +46,4 @@ describe 'integration_test::from_source' do
     it { should be_owned_by 'wp_main' }
     it { should be_grouped_into 'root' }
   end
-
 end
