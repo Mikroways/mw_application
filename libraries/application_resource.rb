@@ -22,7 +22,8 @@ class Chef
       attribute :group, kind_of: String
       attribute :path, kind_of: String, required: true
       attribute :shared_directories, kind_of: Array, default: []
-      attribute :repository, kind_of: String, required: true
+      attribute :source, kind_of: String
+      attribute :repository, kind_of: String
       attribute :revision, kind_of: String
       attribute :symlink_before_migrate, kind_of: Array, default: %w(config/database.yml)
       attribute :deploy_action, kind_of: Symbol, default: :deploy, is: [:deploy, :force_deploy, :rollback]

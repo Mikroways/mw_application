@@ -26,7 +26,7 @@ describe 'application_ruby_test::default' do
       attributes = chef_run.node['applications']['application_ruby']['simple_ruby_app']
       expect(attributes).not_to be_empty
       expect(attributes.keys.sort)
-        .to eq %w(user group path shared_directories repository migration_command migrate environment
+        .to eq %w(user group path shared_directories source repository migration_command migrate environment
                   revision symlink_before_migrate deploy_action socket ruby)
         .sort
       expect(attributes['ruby']).to eq '2.2.4'

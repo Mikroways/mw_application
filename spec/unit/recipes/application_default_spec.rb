@@ -23,7 +23,7 @@ describe 'application_test::default' do
       attributes = chef_run.node['applications']['application']['simple_app']
       expect(attributes).not_to be_empty
       expect(attributes.keys.sort)
-        .to eq %w(user group path shared_directories repository migration_command migrate environment
+        .to eq %w(user group path shared_directories source repository migration_command migrate environment
                   revision symlink_before_migrate deploy_action socket)
         .sort
       expect(attributes['deploy_action']).to eq :deploy
@@ -52,6 +52,7 @@ describe 'application_test::default' do
       expect(chef_run).to create_directory('/dir')
         .with(
           recursive: true,
+          mode: '0750',
           owner: 'simple_app',
           group: 'group')
     end

@@ -31,7 +31,7 @@ Cookbook dependencies
 Other cookbooks may be required depending on the platform used:
 
 * apt/yum so packages are updated if ubuntu/debian/centos/rhel
-* git if your application will be deployed using git
+* git/subversion if your application will be deployed using git/subversion
 
 Usage
 -----
@@ -39,7 +39,7 @@ Usage
 Place a dependency on the mw_application cookbook in your cookbook's metadata.rb
 
 ```ruby
-  depends 'mw_application', '~> 0.1.0'
+  depends 'mw_application'
 ```
 
 Then, in a recipe:
@@ -47,7 +47,6 @@ Then, in a recipe:
 ```ruby
   application 'my_app' do
     path '/opt/applications/my_app'
-    database database_content.gt
     shared_directories %w(log tmp files public)
     repository 'https://github.com/user/my_app.git'
     revision 'master'
@@ -60,7 +59,6 @@ or if it is a ruby application:
 ```ruby
   application_ruby 'my_app' do
     path '/opt/applications/my_app'
-    database database_content.gt
     shared_directories %w(log tmp files public)
     repository 'https://github.com/user/my_app.git'
     revision 'master'
@@ -125,6 +123,10 @@ manually.
 - `path` - path to deploy code using `deploy_revision` chef resource
 - `shared_directories` - array of directories to be created in shared directory
   and purged after cloning code
+- `source` - Will not use SCM to download code. Instead it will download source
+  and uncompress it. Installing from source will not implement actions:
+  - rollback
+  - force_deploy
 - `repository` - url of repository
 - `revision` - reivsion of the application to be deployed
 - `symlink_before_migrate` - files to be symlinked to shared directory before
@@ -155,6 +157,12 @@ manually.
 - `migrate`: boolean indicating if migration_command should be run. Default to
   false
 
+### Applications installed from source
+
+When an application is installed from a source URL, it will download, uncompress
+(by now, tgz files only) and emulate deploy chef resource. It will only create
+the same directory structure as chef deploy resource, but it will no run any
+callback. The only callback valid for this kind of resource is `before_deploy`
 
 ### application_ruby
 
@@ -278,4 +286,11 @@ cookbooks as:
 
 As explained for `application_ruby` resource above this is a specialized version
 of the above helper, for ruby applications
+
+## Included Tests
+
+This cookbook provides two integration test that will deploy:
+
+* redmine
+* wordpress
 
