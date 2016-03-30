@@ -15,6 +15,10 @@ describe 'application_test::deploy_from_remote_file' do
     allow(md5sum).to receive(:stdout).and_return('1' * 32)
 
     stub_command("test \"$(ls -A /dir/releases/#{'1' * 32})\"").and_return(false)
+    stub_command("test -s /dir/releases/file.tgz").and_return(false)
+    stub_command("test -L /dir/releases/11111111111111111111111111111111/dir1").and_return(false)
+    stub_command("test -L /dir/releases/11111111111111111111111111111111/dir2").and_return(false)
+    stub_command("test -L /dir/releases/11111111111111111111111111111111/config/database.yml").and_return(false)
   end
 
   let(:chef_run) do
@@ -164,8 +168,6 @@ describe 'application_test::deploy_from_remote_file' do
         end
 
         it 'creates symlink to current release' do
-          expect(chef_run).to delete_file('/dir/current')
-
           expect(chef_run).to create_link('/dir/current')
             .with(
               to: "/dir/releases/#{'1' * 32}",
