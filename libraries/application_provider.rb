@@ -248,6 +248,7 @@ class Chef
       def install_remote_source
         remote = remote_file source_file do
           retries 5
+          not_if "test -s #{source_file}"
         end
         remote.source new_resource.source
         remote.owner new_resource.user
@@ -270,12 +271,14 @@ class Chef
           directory "#{release_path}/#{dir}" do
             recursive true
             action :delete
+            not_if "test -L #{release_path}/#{dir}"
           end
         end
 
         new_resource.symlink_before_migrate.each do |file|
           file "#{release_path}/#{file}" do
             action :delete
+            not_if "test -L #{release_path}/#{file}"
           end
         end
 
@@ -290,10 +293,6 @@ class Chef
       end
 
       def link_current_release_to_production
-        file new_resource.current_path do
-          action :delete
-        end
-
         l = link new_resource.current_path
         l.to release_path
         l.owner new_resource.user

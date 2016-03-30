@@ -4,7 +4,7 @@ maintainer_email 'chrodriguez@gmail.com'
 license 'Apache 2.0'
 description 'Provides application, application_ruby resources and helpers to create new application LWRPs'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version '0.2.0'
+version '0.2.1'
 source_url 'https://github.com/Mikroways/mw_application'
 issues_url 'https://github.com/Mikroways/mw_application/issues'
 
