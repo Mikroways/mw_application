@@ -221,6 +221,10 @@ class Chef
 
       def find_release_slug
         if !::File.exist?(source_file)
+          package 'curl' do
+            action :nothing
+          end.run_action(:install)
+
           shell_out!("curl -s '#{@new_resource.source}' | md5sum | grep --only-matching -m 1 '^[0-9a-f]*'")
             .stdout.chomp("\n")
         else

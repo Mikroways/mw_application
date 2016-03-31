@@ -110,6 +110,7 @@ Actions are the same for original chef deploy resource:
 - `:deploy`
 - `:force_deploy`
 - `:rollback`
+- `:delete`
 
 An additional `:delete` action is provided to remove saved node attributes, but
 it will not delete installed application from server. This action must be run
