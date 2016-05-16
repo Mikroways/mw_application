@@ -13,9 +13,9 @@ class Chef
       def install_ruby
         unless node['mw_application_ruby_installed']
           include_recipe 'ruby_rbenv::system_install'
-          include_recipe 'ruby_build'
           node.set['mw_application_ruby_installed'] = true
         end
+        include_recipe 'ruby_build'
 
         rbenv_ruby new_resource.ruby
 
